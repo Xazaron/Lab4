@@ -1,18 +1,19 @@
+//Hordienko Dmytro SMP Lab4
 const mongoose = require("mongoose");
 const express = require("express");
 const Schema = mongoose.Schema;
 const app = express();
 const jsonParser = express.json();
  
-const trackScheme = new Schema({name: String, 
-    author: String, genre: String, date: Number}, 
+const seriesScheme = new Schema({name: String, 
+    director: String, genre: String, date: Number}, 
     {versionKey: false});
-const Track = mongoose.model("Track", trackScheme);
+const Series = mongoose.model("Series", seriesScheme);
  
 app.use(express.static(__dirname + "/public"));
  
 // підключення до бази даних
-mongoose.connect("mongodb://localhost:27017/songsdb", 
+mongoose.connect("mongodb://localhost:27017/seriessdb", 
     { useUnifiedTopology: true, useNewUrlParser: true}, 
     function(err){
     if (err) 
@@ -22,75 +23,75 @@ mongoose.connect("mongodb://localhost:27017/songsdb",
     });
 });
 
-// для отримання книг
-app.get("/api/songs", function(req, res){
+// для отримання seriess
+app.get("/api/seriess", function(req, res){
         
-    Track.find({}, function(err, tracks){
+    Series.find({}, function(err, seriess){
         if(err) 
             return console.log(err);
-        res.send(tracks)
+        res.send(seriess)
     });
 });
  
-// для отримання книги
-app.get("/api/songs/:id", function(req, res){
+// для отримання series
+app.get("/api/seriess/:id", function(req, res){
          
     const id = req.params.id;
-    Track.findOne({_id: id}, function(err, track){       
+    Series.findOne({_id: id}, function(err, series){       
         if(err) 
             return console.log(err);
-        res.send(track);
+        res.send(series);
     });
 });
     
-// для додавання книги в базу даних
-app.post("/api/songs", jsonParser, function (req, res) {
+// для додавання series в базу даних
+app.post("/api/seriess", jsonParser, function (req, res) {
         
     if(!req.body) 
         return res.sendStatus(400);
         
-    const trackName = req.body.name;
-    const trackAuthor = req.body.author;
-    const trackGenre = req.body.genre;
-    const trackDate = req.body.date;
-    const track = new Track({name: trackName, 
-        author: trackAuthor, genre: trackGenre, date: trackDate});
+    const seriesName = req.body.name;
+    const seriesDirector = req.body.director;
+    const seriesGenre = req.body.genre;
+    const seriesDate = req.body.date;
+    const series = new Series({name: seriesName, 
+        director: seriesDirector, genre: seriesGenre, date: seriesDate});
         
-    track.save(function(err){
+        series.save(function(err){
         if(err) 
             return console.log(err);
-        res.send(track);
+        res.send(series);
     });
 });
 
-// для вилучення книги із бази даних
-app.delete("/api/songs/:id", function(req, res){
+// для вилучення seriess із бази даних
+app.delete("/api/seriess/:id", function(req, res){
          
     const id = req.params.id;
-    Track.findByIdAndDelete(id, function(err, track){            
+    Series.findByIdAndDelete(id, function(err, series){            
         if(err) 
             return console.log(err);
-        res.send(track);
+        res.send(series);
     });
 });
 
-// для оновлення інформації про книгу
-app.put("/api/songs", jsonParser, function(req, res){
+// для оновлення інформації про series
+app.put("/api/seriess", jsonParser, function(req, res){
          
     if(!req.body) 
         return res.sendStatus(400);
     const id = req.body.id;
-    const trackName = req.body.name;
-    const trackAuthor = req.body.author;
-    const trackGenre = req.body.genre;
-    const trackDate = req.body.pages;
-    const newTrack = {author: trackAuthor, 
-        name: trackName, genre: trackGenre, date: trackDate};
+    const seriesName = req.body.name;
+    const seriesDirector = req.body.director;
+    const seriesGenre = req.body.genre;
+    const seriesDate = req.body.date;
+    const newSeries = {director: seriesDirector, 
+        name: seriesName, genre: seriesGenre, date: seriesDate};
      
-    Track.findOneAndUpdate({_id: id}, newTrack, {new: true}, 
-        function(err, track){
+    Series.findOneAndUpdate({_id: id}, newSeries, {new: true}, 
+        function(err, series){
         if(err) 
             return console.log(err); 
-        res.send(track);
+        res.send(series);
     });
 });
